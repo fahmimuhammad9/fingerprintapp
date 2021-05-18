@@ -1,6 +1,6 @@
 <div class="container">
     <div class="page-wrapper">
-        <div class="row">
+        <div class="row mt-3">
             <div class="col">
                 <div class="card">
                     <div class="card-header">
@@ -10,22 +10,24 @@
                         <table width="100%" class="table table-bordered" id="table_id">
                             <thead>
                                 <tr>
-                                    <th>Class Name</th>
-                                    <th>Caption</th>
-                                    <th>Created At</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Class Assigned</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($class as $key) {
+                                <?php foreach ($student as $key) {
                                 ?>
                                     <tr>
-                                        <td><?= $key['classname'] ?></td>
-                                        <td><?= $key['classcaption'] ?></td>
-                                        <td><?= $key['created_at'] ?></td>
-                                        <td><a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>">Info</a>
-                                            <a href="">Setting</a>
-                                            <a href="<?= base_url('lecture/deactivateclass/') . $key['classid']; ?>">Deactivate</a>
+                                        <td><?= $key['name'] ?></td>
+                                        <td><?= $key['email'] ?></td>
+                                        <td><?php if ($key['classname'] == null) {
+                                                echo 'N/A';
+                                            } else {
+                                                echo $key['classname'];
+                                            }  ?></td>
+                                        <td>Deactivate</a>
                                         </td>
                                     </tr>
                                 <?php

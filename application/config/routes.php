@@ -67,6 +67,5 @@ $route['absent'] = 'student/absent';
 
 $route['session'] = 'lecture/session';
 
-
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

@@ -25,8 +25,10 @@ class StudentModel extends CI_Model
     }
     function get_student()
     {
-        $this->db->where('role', 2);
-        return $this->db->get('user')->result_array();
+        $this->db->join('classassign ca', 'ca.id_user = u.id', 'LEFT');
+        $this->db->join('class c', 'c.classid = ca.id_class', 'LEFT');
+        $this->db->where('u.role', 2);
+        return $this->db->get('user u')->result_array();
     }
     function get_where($table, $cond)
     {
