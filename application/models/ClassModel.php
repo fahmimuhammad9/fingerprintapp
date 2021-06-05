@@ -15,6 +15,11 @@ class ClassModel extends CI_Model
         $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
         return $this->db->get('class')->result_array();
     }
+    function get_class_info($id)
+    {
+        $this->db->where('classid', $id);
+        return $this->db->get('class')->row_array();
+    }
     function get_status()
     {
         return $this->db->get('globalstatus')->result_array();

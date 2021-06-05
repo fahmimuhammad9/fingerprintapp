@@ -70,7 +70,7 @@
                                         <td><?= $key['classname'] ?></td>
                                         <td><?= $key['caption'] ?></td>
                                         <td><a href="<?= base_url('lecture/deactivateclass/') . $key['classid']; ?>" class="btn btn-info"><i class="fas fa-times"></i> Deactivate</a>
-                                            <a href="<?= base_url('assignmclass') ?>" class="btn btn-info"><i class="fas fa-clipboard"></i> Assign Class</a>
+                                            <a href="<?= base_url('lecture/assignmclass/') . $key['classid'] ?>" class="btn btn-info"><i class="fas fa-clipboard"></i> Assign Class</a>
                                             <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>" class="btn btn-info"><i class="fas fa-info"></i> Class Information</a>
                                         </td>
                                     </tr>

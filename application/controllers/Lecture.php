@@ -196,19 +196,14 @@ class Lecture extends CI_Controller
         }
     }
 
-    public function assignmclass()
+    public function assignmclass($idclass)
     {
         $this->LectureModel->validate();
-        $this->form_validation->set_rules('id', 'Id', 'required');
-
-        if ($this->form_validation->run() == false) {
-            $data['title'] = 'Assign Class';
-            $this->load->view('template/header', $data);
-            $this->load->view('template/navbar', $data);
-            $this->load->view('pages/assignclass', $data);
-            $this->load->view('tempalte/footer');
-        } else {
-            $check = $this->LectureModel->getclass();
-        }
+        $data['title'] = 'Assign Class';
+        $data['classinfo'] = $this->ClassModel->get_class_info($idclass);
+        $this->load->view('template/header', $data);
+        $this->load->view('template/navbar', $data);
+        $this->load->view('pages/assignclass', $data);
+        $this->load->view('template/footer');
     }
 }
