@@ -15,9 +15,6 @@ class LectureModel extends CI_Model
         if ($this->session->userdata['email'] == null) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Access Denied!</div>');
             redirect('login');
-        } else if ($this->session->userdata['role'] != 1) {
-            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Access Denied!</div>');
-            redirect('logout');
         }
     }
 
@@ -28,25 +25,11 @@ class LectureModel extends CI_Model
         return $this->db->get('class')->result_array();
     }
 
-    function get($tables)
+    function get()
     {
-        return $this->db->get($tables)->result_array();
-    }
-
-    function update_class_status($id, $status)
-    {
-        $this->db->where('classid', $id);
-        $temp = $this->db->get('class')->row_array();
-
-        $arr = [
-            'classname' => $temp['classname'],
-            'classcaption' => $temp['classcaption'],
-            'created_at' => $temp['created_at'],
-            'author' => $temp['author'],
-            'status' => $status
-        ];
-        $this->db->where('classid', $id);
-        $this->db->update('class', $arr);
+        $this->db->join('class', 'class.classid = student.studentclass');
+        $this->db->join('globalstatus', 'globalstatus.status.id = student.studnetstatus', 'left');
+        return $this->db->get('student')->result_array();
     }
 
     function get_class_info($id)
@@ -60,5 +43,11 @@ class LectureModel extends CI_Model
     {
         $this->db->where('id', $id);
         $this->db->delete($table);
+    }
+
+    function get_author_class()
+    {
+        $this->db->where('sess_author', $this->session->userdata['id']);
+        return $this->db->get('session')->result_array();
     }
 }

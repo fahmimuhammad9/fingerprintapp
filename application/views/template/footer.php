@@ -10,7 +10,6 @@
     $(document).ready(function() {
         $('#table2').DataTable();
     });
-    $('.datepicker').datepicker();
 </script>
 <script src="<?= base_url('assets/') ?>js/scripts.js"></script>
 <script type="text/javascript" src="<?= base_url('assets/') ?>DataTables/datatables.min.js"></script>

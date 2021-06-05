@@ -9,15 +9,14 @@ class SessionModel extends CI_Model
     {
         parent::__construct();
     }
-    function validate()
+    function get_session()
     {
-        if ($this->session->userdata['role'] == 1) {
-            redirect('sessionlec');
-        } else if ($this->session->userdata['role'] == 2) {
-            redirect('sessionstu');
-        } else {
-            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Access Denied!</div>');
-            redirect('login');
-        }
+        $this->db->where('sessionauthor', $this->session->userdata['id']);
+        return $this->db->get('session')->result_array();
+    }
+    function checkactive()
+    {
+        $this->db->where('sessionstat', 1);
+        return $this->db->get('session')->result_array();
     }
 }

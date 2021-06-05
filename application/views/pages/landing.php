@@ -47,16 +47,6 @@
                                             <input class="form-control" type="email" placeholder="Masukkan Email Pengguna" name="email" id="email">
                                         </div>
                                         <div class="form-group">
-                                            <select name="role" id="role" class="form-control">
-                                                <option value="" selected hidden>Select Role</option>
-                                                <?php foreach ($role as $key) {
-                                                ?>
-                                                    <option value="<?= $key['role_id'] ?>"><?= $key['role'] ?></option>
-                                                <?php
-                                                } ?>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
                                             <input class="form-control" type="password" placeholder="Masukkan Kata Sandi" name="password" id="password">
                                         </div>
                                         <div class="form-group">
@@ -104,8 +94,6 @@
         </div>
     </nav>
     <?= $this->session->flashdata('message'); ?>
-    <?= var_dump($role) ?>
-
     <div class="container">
         <div class="row"></div>
     </div>

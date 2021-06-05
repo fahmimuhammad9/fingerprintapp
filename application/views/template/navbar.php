@@ -17,13 +17,13 @@
                     <a class="nav-link" href="<?= base_url('lecture'); ?>">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('lectureassign'); ?>">Class</a>
+                    <a class="nav-link" href="<?= base_url('class'); ?>">Class</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?= base_url('session'); ?>">Session</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('stuview'); ?>">Student</a>
+                    <a class="nav-link" href="<?= base_url('student'); ?>">Student</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?= base_url('setting'); ?>">Settings</a>

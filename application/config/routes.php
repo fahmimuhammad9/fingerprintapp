@@ -54,18 +54,14 @@ $route['login'] = 'user/login';
 $route['register'] = 'user/register';
 $route['logout'] = 'user/logout';
 
+$route['class'] = 'lecture/class';
 $route['addclass'] = 'lecture/newclass';
-$route['lectureassign'] = 'lecture/lectureassign';
-$route['stuview'] = 'lecture/stuview';
-
-$route['student'] = 'student';
-$route['classes'] = 'student/classes';
-$route['stusession'] = 'student/session';
-$route['disembark'] = 'student/disembark';
-$route['stusetting'] = 'student/setting';
-$route['absent'] = 'student/absent';
-
+$route['student'] = 'lecture/student';
 $route['session'] = 'lecture/session';
+$route['registersession'] = 'lecture/createsession';
+$route['lectureassign'] = 'lecture/lectureassign';
+$route['addstudent'] = 'lecture/studentadd';
+$route['assignclass'] = 'lecture/assignmclass';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

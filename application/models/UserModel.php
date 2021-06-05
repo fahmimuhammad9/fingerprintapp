@@ -10,9 +10,17 @@ class UserModel extends CI_Model
         parent::__construct();
     }
 
-    public function getinput($email)
+    function validate()
     {
-        $this->db->where('email', $email);
-        return $this->db->get('user');
+        if ($this->session->userdata['email'] == null) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">No Direct Access Allowed!</div>');
+            redirect('login');
+        }
+    }
+
+    function validatepassword($email)
+    {
+        $this->db->where('useremail', $email);
+        return $this->db->get('user')->row_array();
     }
 }

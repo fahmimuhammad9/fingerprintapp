@@ -14,10 +14,7 @@ class User extends CI_Controller
 
     public function index()
     {
-        if ($this->session->userdata['email'] == null) {
-            redirect('login');
-        }
-
+        $this->UserModel->validate();
         $data['title'] = 'Finger Print Attendance';
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
@@ -33,33 +30,24 @@ class User extends CI_Controller
         ]);
         $this->form_validation->set_rules('password', 'Password', 'required|trim');
 
-        $this->db->where('email', $this->input->post('email'));
-        $user = $this->db->get('user')->row_array();
+        $user = $this->UserModel->validatepassword($this->input->post('email'));
 
         if ($this->form_validation->run() == false) {
             $data['title'] = 'Finger Print Attendance Login';
-            $data['role'] = $this->db->get('role')->result_array();
-
             $this->load->view('pages/landing', $data);
         } else {
             if ($user) {
-                if (password_verify($this->input->post('password'), $user['password'])) {
+                if (password_verify($this->input->post('password'), $user['userpassword'])) {
                     $data = [
-                        'id' => $user['id'],
-                        'email' => $user['email'],
-                        'name' => $user['name'],
-                        'role' => $user['role']
+                        'id' => $user['userid'],
+                        'email' => $user['useremail'],
+                        'name' => $user['username'],
                     ];
                     $this->session->set_userdata($data);
-
-                    if ($this->session->userdata['role'] == 1) {
-                        redirect('lecture');
-                    } else {
-                        redirect('student');
-                    }
-                    redirect('user');
+                    redirect('lecture');
                 } else {
                     $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Kata Sandi Salah!</div>');
+                    var_dump($user);
                     redirect('login');
                 }
             } else {
@@ -71,9 +59,8 @@ class User extends CI_Controller
 
     public function register()
     {
-        $this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[user.email]');
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[user.useremail]');
         $this->form_validation->set_rules('name', 'Name', 'required|trim');
-        $this->form_validation->set_rules('role', 'Role', 'required');
         $this->form_validation->set_rules('password', 'Password', 'required|trim|min_length[8]');
         $this->form_validation->set_rules('confirm', 'Confirm', 'required|trim|matches[password]');
 
@@ -82,10 +69,9 @@ class User extends CI_Controller
             redirect('user');
         } else {
             $in = [
-                'name' => $this->input->post('name'),
-                'email' => htmlspecialchars($this->input->post('email', true)),
-                'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
-                'role' => $this->input->post('role')
+                'username' => $this->input->post('name'),
+                'useremail' => htmlspecialchars($this->input->post('email', true)),
+                'userpassword' => password_hash($this->input->post('password'), PASSWORD_DEFAULT)
             ];
             $this->db->insert('user', $in);
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Berhasil Mendaftarkan Akun Anda! Silahkan Masuk</div>');

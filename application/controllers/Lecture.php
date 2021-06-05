@@ -9,6 +9,8 @@ class Lecture extends CI_Controller
         $this->load->library('form_validation');
         $this->load->model('LectureModel');
         $this->load->model('StudentModel');
+        $this->load->model('SessionModel');
+        $this->load->model('ClassModel');
         date_default_timezone_set('Asia/Bangkok');
         // $this->load->model('LectureModel');
     }
@@ -18,9 +20,27 @@ class Lecture extends CI_Controller
         $this->LectureModel->validate();
 
         $data['title'] = 'Homepage | Lecturer';
+        $data['class'] = $this->ClassModel->get_class();
+        $data['session'] = $this->SessionModel->get_session();
+
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
         $this->load->view('pages/homepage', $data);
+        $this->load->view('template/footer');
+    }
+
+    public function class()
+    {
+        $this->LectureModel->validate();
+
+        $data['title'] = 'Class Assign';
+        $data['status'] = $this->ClassModel->get_status();
+        $data['activeclass'] = $this->ClassModel->get_active();
+        $data['reservedclass'] = $this->ClassModel->get_reserved();
+
+        $this->load->view('template/header', $data);
+        $this->load->view('template/navbar', $data);
+        $this->load->view('pages/class', $data);
         $this->load->view('template/footer');
     }
 
@@ -47,47 +67,44 @@ class Lecture extends CI_Controller
         $this->form_validation->set_rules('name', 'Name', 'required|trim', [
             'required' => 'Class name is needed'
         ]);
-        $this->form_validation->set_rules('caption', 'Caption', 'required|trim', [
-            'required' => 'Class caption is needed'
-        ]);
         $this->form_validation->set_rules('status', 'Status', 'required');
 
         if ($this->form_validation->run() == false) {
-            redirect('lecture');
+            redirect('class');
         } else {
             $in = [
+                'classauthor' => $this->session->userdata['id'],
                 'classname' => htmlspecialchars($this->input->post('name')),
-                'classcaption' => htmlspecialchars($this->input->post('caption')),
-                'created_at' => date("Y-m-d"),
-                'author' => $this->session->userdata['id'],
-                'status' => $this->input->post('status')
+                'classstatus' => $this->input->post('status')
             ];
             $this->db->insert('class', $in);
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Adding New Class!</div>');
-            redirect('lecture');
+            redirect('class');
         }
     }
 
     public function activateclass($id)
     {
         $this->LectureModel->validate();
-        $this->LectureModel->update_class_status($id, 1);
+        $this->ClassModel->update_class_status($id, 1);
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Activate a Class!</div>');
-        redirect('lectureassign');
+        redirect('class');
     }
     public function deactivateclass($id)
     {
         $this->LectureModel->validate();
-        $this->LectureModel->update_class_status($id, 2);
+        $this->ClassModel->update_class_status($id, 2);
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Deactivating a Class!</div>');
-        redirect('lectureassign');
+        redirect('class');
     }
 
-    public function stuview()
+    public function student()
     {
         $this->LectureModel->validate();
         $data['title'] = 'Student List';
         $data['student'] = $this->StudentModel->get_student();
+        $data['class'] = $this->ClassModel->get_active();
+        $data['status'] = $this->ClassModel->get_status();
 
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
@@ -121,11 +138,77 @@ class Lecture extends CI_Controller
     {
         $this->LectureModel->validate();
 
+        $data['active'] = $this->SessionModel->checkactive();
+        $data['status'] = $this->ClassModel->get_status();
+
         $data['title'] = 'Session Page | Lecturer';
 
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
         $this->load->view('pages/session', $data);
         $this->load->view('template/footer');
+    }
+
+    public function createsession()
+    {
+        $this->LectureModel->validate();
+        $this->form_validation->set_rules('title', 'Title', 'required|trim');
+        $this->form_validation->set_rules('status', 'Status', 'required');
+
+        if ($this->form_validation->run() == false) {
+            $data['title'] = 'Register New Session';
+            $data['student'] = $this->db->get('student')->result_array();
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/navbar', $data);
+            $this->load->view('pages/createsession', $data);
+            $this->load->view('template/footer');
+        } else {
+            $in = [
+                'sessiontitle' => $this->input->post('title'),
+                'sessionauthor' => $this->session->userdata['id'],
+                'sessionstart' => time(),
+                'sessionend' => null,
+                'sessionstat' => $this->input->post['status']
+            ];
+            $this->db->insert('session', $in);
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Registering Your Session! Go Activate!</div>');
+            redirect('session');
+        }
+    }
+
+    public function studentadd()
+    {
+        $this->LectureModel->validate();
+        $this->form_validation->set_rules('name', 'Name', 'required|trim');
+
+        if ($this->form_validation->run() == false) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Something went wrong!</div>');
+            redirect('student');
+        } else {
+            $in = [
+                'studentname' => htmlspecialchars($this->input->post('name')),
+                'studentstatus' => 1
+            ];
+            $this->db->insert('student', $in);
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Add New Student!</div>');
+            redirect('student');
+        }
+    }
+
+    public function assignmclass()
+    {
+        $this->LectureModel->validate();
+        $this->form_validation->set_rules('id', 'Id', 'required');
+
+        if ($this->form_validation->run() == false) {
+            $data['title'] = 'Assign Class';
+            $this->load->view('template/header', $data);
+            $this->load->view('template/navbar', $data);
+            $this->load->view('pages/assignclass', $data);
+            $this->load->view('tempalte/footer');
+        } else {
+            $check = $this->LectureModel->getclass();
+        }
     }
 }
