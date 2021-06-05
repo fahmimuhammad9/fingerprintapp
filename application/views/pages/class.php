@@ -104,9 +104,9 @@
                                     <tr>
                                         <td><?= $key['classname'] ?></td>
                                         <td><?= $key['caption'] ?></td>
-                                        <td><a href="<?= base_url('lecture/activateclass/') . $key['classid']; ?>">Activate</a>
-                                            <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>">Info</a>
-                                            <a href="">Setting</a>
+                                        <td><a class="btn btn-info" href="<?= base_url('lecture/activateclass/') . $key['classid']; ?>"><i class="fas fa-check"></i> Activate</a>
+                                            <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>" class="btn btn-info"><i class="fas fa-info"></i> Class Information</a>
+                                            <a class="btn btn-info" href=""><i class="fas fa-trash-alt"></i> Delete</a>
                                         </td>
                                     </tr>
                                 <?php

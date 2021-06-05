@@ -44,6 +44,7 @@
                             <thead>
                                 <tr>
                                     <th>Full Name</th>
+                                    <th>Total Assigned Class</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -52,6 +53,7 @@
                                 ?>
                                     <tr>
                                         <td><?= $key['studentname'] ?></td>
+                                        <td></td>
                                         <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#assignclass">
                                                 Assign Class
                                             </button>
@@ -80,10 +82,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="<?= base_url('as'); ?>" method="post">
+                <form action="<?= base_url('lecture/assignstudent/' . $key['studentid']); ?>" method="post">
                     <div class="form-group">
                         <label for="">Assign Class</label>
-                        <select class="form-control" name="status" id="status">
+                        <select class="form-control" name="class" id="class">
                             <option value="" selected hidden>Select Status</option>
                             <?php foreach ($class as $key) {
                             ?>

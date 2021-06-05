@@ -61,7 +61,6 @@ $route['session'] = 'lecture/session';
 $route['registersession'] = 'lecture/createsession';
 $route['lectureassign'] = 'lecture/lectureassign';
 $route['addstudent'] = 'lecture/studentadd';
-$route['assignclass'] = 'lecture/assignmclass';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

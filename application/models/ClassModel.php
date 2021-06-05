@@ -13,6 +13,7 @@ class ClassModel extends CI_Model
     function get_class()
     {
         $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
+        $this->db->where('classauthor', $this->session->userdata['id']);
         return $this->db->get('class')->result_array();
     }
     function get_class_info($id)
@@ -28,6 +29,7 @@ class ClassModel extends CI_Model
     {
         $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
         $this->db->where('classstatus', 1);
+        $this->db->where('classauthor', $this->session->userdata['id']);
         return $this->db->get('class')->result_array();
     }
     function get_reserved()
@@ -48,5 +50,17 @@ class ClassModel extends CI_Model
         ];
         $this->db->where('classid', $id);
         $this->db->update('class', $arr);
+    }
+    function total_student($idclass)
+    {
+        $this->db->select_sum('handshakeid');
+        $this->db->where('classid', $idclass);
+        return $this->db->get('classhandshake');
+    }
+    function get_assigned_student($idclass)
+    {
+        $this->db->join('student', 'student.studentid = classhandshake.studentid', 'left');
+        $this->db->where('classid', $idclass);
+        return $this->db->get('classhandshake')->result_array();
     }
 }

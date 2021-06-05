@@ -120,20 +120,6 @@ class Lecture extends CI_Controller
         redirect('lectureassign');
     }
 
-    public function classinfo($id)
-    {
-        $this->LectureModel->validate();
-
-        $data['title'] = 'Class Detail Information';
-
-        $data['info'] = $this->LectureModel->get_class_info($id);
-
-        $this->load->view('template/header', $data);
-        $this->load->view('template/navbar', $data);
-        $this->load->view('pages/classinfo', $data);
-        $this->load->view('template/footer');
-    }
-
     public function session()
     {
         $this->LectureModel->validate();
@@ -158,6 +144,8 @@ class Lecture extends CI_Controller
         if ($this->form_validation->run() == false) {
             $data['title'] = 'Register New Session';
             $data['student'] = $this->db->get('student')->result_array();
+            $data['status'] = $this->ClassModel->get_status();
+            $data['class'] = $this->ClassModel->get_active();
 
             $this->load->view('template/header', $data);
             $this->load->view('template/navbar', $data);
@@ -196,11 +184,32 @@ class Lecture extends CI_Controller
         }
     }
 
+    public function assignstudent($idstudent)
+    {
+        $this->LectureModel->validate();
+
+        $this->form_validation->set_rules('class', 'Class', 'required');
+
+        if ($this->form_validation->run() == false) {
+            redirect('student');
+        } else {
+            $in = [
+                'classid' => $this->input->post('class'),
+                'studentid' => $idstudent
+            ];
+            $this->db->insert('classhandshake', $in);
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Assign Student!</div>');
+            redirect('student');
+        }
+    }
+
     public function assignmclass($idclass)
     {
         $this->LectureModel->validate();
         $data['title'] = 'Assign Class';
         $data['classinfo'] = $this->ClassModel->get_class_info($idclass);
+        $data['totalstudent'] = $this->ClassModel->total_student($idclass);
+        $data['assignedstudent'] = $this->ClassModel->get_assigned_student($idclass);
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
         $this->load->view('pages/assignclass', $data);
