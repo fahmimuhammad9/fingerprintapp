@@ -52,7 +52,8 @@
             <div class="col">
                 <div class="card">
                     <div class="card-header">
-                        Active Class
+                        <i class="fas fa-calendar-day"></i>
+                        Running Class
                     </div>
                     <div class="card-body">
                         <table width="100%" class="table table-bordered" id="table_id">
@@ -68,10 +69,24 @@
                                 ?>
                                     <tr>
                                         <td><?= $key['classname'] ?></td>
-                                        <td><?= $key['caption'] ?></td>
-                                        <td><a href="<?= base_url('lecture/deactivateclass/') . $key['classid']; ?>" class="btn btn-info"><i class="fas fa-times"></i> Deactivate</a>
-                                            <a href="<?= base_url('lecture/assignmclass/') . $key['classid'] ?>" class="btn btn-info"><i class="fas fa-clipboard"></i> Assign Class</a>
-                                            <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>" class="btn btn-info"><i class="fas fa-info"></i> Class Information</a>
+                                        <td><?php if ($key['classstatus'] == 1) {
+                                                echo '<span class="badge bg-success text-white"><i class="fas fa-check"></i> ' . $key['caption'] . '</span>';
+                                            } else {
+                                                echo '<span class="badge bg-warning text-white"><i class="fas fa-archive"></i> ' . $key['caption'] . '</span>';
+                                            } ?>
+
+                                        </td>
+                                        <td>
+                                            <?php if ($key['classstatus'] == 1) {
+                                                echo '<a href="' . base_url('lecture/reserveclass/') . $key['classid'] . '" class="btn btn-warning"><i class="fas fa-archive"></i> Reserve</a>';
+                                            } else {
+                                                echo '<a href="' . base_url('lecture/activateclass/') . $key['classid'] . '" class="btn btn-success"><i class="fas fa-check"></i> Activate</a>';
+                                            } ?>
+                                            <a href="<?= base_url('lecture/deactivateclass/') . $key['classid']; ?>" class="btn btn-danger"><i class="fas fa-times"></i> Deactivate</a>
+                                            <a href="<?= base_url('lecture/assignmclass/') . $key['classid'] ?>" class="btn btn-info  <?php if ($key['classstatus'] != 1) {
+                                                                                                                                            echo ' disabled';
+                                                                                                                                        } ?>"><i class="fas fa-user-plus"></i> Assign</a>
+                                            <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>" class="btn btn-secondary"><i class="fas fa-info"></i> Class Info</a>
                                         </td>
                                     </tr>
                                 <?php
@@ -87,7 +102,8 @@
             <div class="col">
                 <div class="card">
                     <div class="card-header">
-                        Other Class
+                        <i class="fas fa-times"></i>
+                        Deactivated Class
                     </div>
                     <div class="card-body">
                         <table width="100%" class="table table-bordered" id="table2">
@@ -104,9 +120,9 @@
                                     <tr>
                                         <td><?= $key['classname'] ?></td>
                                         <td><?= $key['caption'] ?></td>
-                                        <td><a class="btn btn-info" href="<?= base_url('lecture/activateclass/') . $key['classid']; ?>"><i class="fas fa-check"></i> Activate</a>
-                                            <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>" class="btn btn-info"><i class="fas fa-info"></i> Class Information</a>
-                                            <a class="btn btn-info" href=""><i class="fas fa-trash-alt"></i> Delete</a>
+                                        <td><a class="btn btn-success" href="<?= base_url('lecture/activateclass/') . $key['classid']; ?>"><i class="fas fa-check"></i> Activate</a>
+                                            <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>" class="btn btn-secondary"><i class="fas fa-info"></i> Class Info</a>
+                                            <button class="btn btn-danger" data-toggle="modal" data-target="#delete"><i class="fas fa-trash"></i> Delete</button>
                                         </td>
                                     </tr>
                                 <?php
@@ -118,5 +134,30 @@
             </div>
         </div>
 
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You will delete <br>
+                <b><?= $key['classname'] ?></b>
+                <br>
+                Are you sure want to delete this class?<br>
+                This action also will delete all assigned student in this class.
+                <br>
+                <small class="text-danger">This action cannot be change later!</small>
+            </div>
+            <div class="modal-footer">
+                <a href="<?= base_url('lecture/deleteclass/') . $key['classid']; ?>" class="btn btn-danger btn-block">Delete Anyways</a>
+            </div>
+        </div>
     </div>
 </div>

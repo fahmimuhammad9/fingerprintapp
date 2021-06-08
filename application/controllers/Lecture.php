@@ -97,6 +97,13 @@ class Lecture extends CI_Controller
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Deactivating a Class!</div>');
         redirect('class');
     }
+    public function reserveclass($id)
+    {
+        $this->LectureModel->validate();
+        $this->ClassModel->update_class_status($id, 3);
+        $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Deactivating a Class!</div>');
+        redirect('class');
+    }
 
     public function student()
     {
@@ -115,9 +122,10 @@ class Lecture extends CI_Controller
     public function deleteclass($id)
     {
         $this->LectureModel->validate();
-        $this->LectureModel->delete_by_id('class', $id);
+        $this->ClassModel->deleteclass($id);
+        $this->ClassModel->deleteassigned($id);
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Deleting a Class!</div>');
-        redirect('lectureassign');
+        redirect('class');
     }
 
     public function session()
@@ -207,12 +215,46 @@ class Lecture extends CI_Controller
     {
         $this->LectureModel->validate();
         $data['title'] = 'Assign Class';
+
         $data['classinfo'] = $this->ClassModel->get_class_info($idclass);
         $data['totalstudent'] = $this->ClassModel->total_student($idclass);
         $data['assignedstudent'] = $this->ClassModel->get_assigned_student($idclass);
+        $data['nastudent'] = $this->StudentModel->get_student();
+
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
         $this->load->view('pages/assignclass', $data);
+        $this->load->view('template/footer');
+    }
+
+    public function assigntoclass($student, $class)
+    {
+        $this->LectureModel->validate();
+        $in = [
+            'classid' => $class,
+            'studentid' => $student
+        ];
+        $this->db->insert('classhandshake', $in);
+        $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Assign Student!</div>');
+        redirect('lecture/assignmclass/' . $class);
+    }
+    public function kickfromclass($student, $class)
+    {
+        $this->db->where('classid', $class);
+        $this->db->where('studentid', $student);
+        $this->db->delete('classhandshake');
+        $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Kick Student!</div>');
+        redirect('lecture/assignmclass/' . $class);
+    }
+
+    public function classinfo($id)
+    {
+        $this->LectureModel->validate();
+        $data['title'] = 'Class Information';
+
+        $this->load->view('template/header', $data);
+        $this->load->view('template/navbar', $data);
+        $this->load->view('pages/classinfo', $data);
         $this->load->view('template/footer');
     }
 }

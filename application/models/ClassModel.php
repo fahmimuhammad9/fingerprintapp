@@ -29,13 +29,14 @@ class ClassModel extends CI_Model
     {
         $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
         $this->db->where('classstatus', 1);
+        $this->db->or_where('classstatus', 3);
         $this->db->where('classauthor', $this->session->userdata['id']);
         return $this->db->get('class')->result_array();
     }
     function get_reserved()
     {
         $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
-        $this->db->where('classstatus !=', 1);
+        $this->db->where('classstatus', 2);
         return $this->db->get('class')->result_array();
     }
     function update_class_status($id, $status)
@@ -62,5 +63,15 @@ class ClassModel extends CI_Model
         $this->db->join('student', 'student.studentid = classhandshake.studentid', 'left');
         $this->db->where('classid', $idclass);
         return $this->db->get('classhandshake')->result_array();
+    }
+    function deleteclass($id)
+    {
+        $this->db->where('classid', $id);
+        $this->db->delete('class');
+    }
+    function deleteassigned($id)
+    {
+        $this->db->where('classid', $id);
+        $this->db->delete('classhandshake');
     }
 }
