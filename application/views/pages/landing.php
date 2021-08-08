@@ -95,14 +95,83 @@
     </nav>
     <?= $this->session->flashdata('message'); ?>
     <div class="container">
-        <div class="row"></div>
+        <div class="row mt-3 text-center">
+            <div class="col-sm">
+                <div class="card">
+                    <div class="card-body">
+                        <i class="fa fa-laptop-house fa-5x"></i>
+                        <h5 class="card-title">Registered Device <span class="badge badge-info"><?= $totaldevice  ?></span></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card">
+                    <div class="card-body">
+                        <i class="fa fa-users fa-5x"></i>
+                        <h5 class="card-title">Registered Student <span class="badge badge-info"><?= $totalstudent  ?></span></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card">
+                    <div class="card-body">
+                        <i class="fa fa-sticky-note fa-5x"></i>
+                        <h5 class="card-title">Registered Session <span class="badge badge-info"><?= $totalsession  ?></span></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card">
+                    <div class="card-body">
+                        <i class="fa fa-university fa-5x"></i>
+                        <h5 class="card-title">Registered Class <span class="badge badge-info"><?= $totalclass  ?></span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">Last Absent Result</div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <?php foreach ($seerecent as $key) {
+                            ?>
+                                <li class="list-group-item"><?= $key['studentname'] ?> just check in Session [<?= $key['sessiontitle'] ?>] at [<?= $key['timestamp'] ?>] <?php if ($key['sessionend'] < date('Y/m/d H:i:s')) {
+                                                                                                                                                                            ?>
+                                        <span class="badge badge-success">On Time</span> <?php                                                                                        } else {
+                                                                                            ?><span class="badge badge-danger">Over Time</span>
+                                    <?php
+                                                                                                                                                                            } ?>
+                                </li>
+                            <?php
+                            } ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $('#myModal').on('shown.bs.modal', function() {
             $('#myInput').trigger('focus')
-        })
+        });
+
+        var span = document.getElementById('span');
+
+        function time() {
+            var d = new Date();
+            var s = d.getSeconds();
+            var m = d.getMinutes();
+            var h = d.getHours();
+            var x = d.getDate();
+            span.textContent =
+                ("0" + h).substr(-2) + ":" + ("0" + m).substr(-2) + ":" + ("0" + s).substr(-2);
+        }
+
+        setInterval(time, 1000);
     </script>
     <script src="<?= base_url('assets/') ?>js/scripts.js"></script>
 </body>

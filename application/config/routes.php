@@ -59,6 +59,7 @@ $route['addclass'] = 'lecture/newclass';
 $route['student'] = 'lecture/student';
 $route['session'] = 'lecture/session';
 $route['addsession'] = 'lecture/addsession';
+$route['adddevice'] = 'lecture/adddevice';
 
 $route['registersession'] = 'lecture/createsession';
 $route['lectureassign'] = 'lecture/lectureassign';

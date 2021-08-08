@@ -61,8 +61,10 @@ body {
   color: #212529;
   text-align: left;
   background-image: url("../assets/img/bg.jpg");
-  background-repeat: no-repeat, repeat;
-  background-size: 100%;
+  background-position: center center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {

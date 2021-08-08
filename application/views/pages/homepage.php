@@ -1,11 +1,6 @@
 <div class="container">
     <div id="page-wrapper">
-        <div class="row">
-            <div class="col-sm-12">
-                <h1 class="page-header">Dashboard</h1>
-            </div>
-        </div>
-        <div class="row mb-3">
+        <div class="row mb-3 mt-3">
             <div class="col">
                 <div class="card">
                     <div class="card-header">
@@ -78,7 +73,11 @@
                                         <td><?= $key['sessiontitle'] ?></td>
                                         <td><?= $key['sessionstart'] ?></td>
                                         <td><?= $key['sessionend'] ?></td>
-                                        <td><?= $key['sessionstat'] ?></td>
+                                        <td><?php if ($key['sessionstat'] == 1) {
+                                                echo '<span class="badge badge-info">Live</span> <span class="badge badge-success">' . $key['caption'] . '</span>';
+                                            } else {
+                                                echo '<span class="badge badge-warning">' . $key['caption'] . '</span>';
+                                            } ?>
                                     </tr>
                                 <?php
                                 } ?>

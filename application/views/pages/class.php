@@ -1,9 +1,6 @@
 <div class="container">
     <div id="page-wrapper">
-        <div class="row">
-            <div class="col-sm-12">
-                <h1 class="page-header">Manage Classes</h1>
-            </div>
+        <div class="row mb-3">
         </div>
         <?= $this->session->flashdata('message'); ?>
         <div class="row mb-3">

@@ -10,6 +10,7 @@ class User extends CI_Controller
         $this->load->helper(array('form', 'url'));
         date_default_timezone_set('Asia/Bangkok');
         $this->load->model('UserModel');
+        $this->load->model('SessionModel');
     }
 
     public function index()
@@ -20,6 +21,17 @@ class User extends CI_Controller
         $this->load->view('template/navbar', $data);
         $this->load->view('pages/homepage', $data);
         $this->load->view('template/footer');
+    }
+
+    public function homepage()
+    {
+        $data['totaldevice'] = $this->db->count_all('device');
+        $data['totalstudent'] = $this->db->count_all('student');
+        $data['seerecent'] = $this->SessionModel->seerecent();
+        $data['totalsession'] = $this->db->count_all('session');
+        $data['totalclass'] = $this->db->count_all('class');
+        $data['title'] = 'Finger Print Attendance Login';
+        $this->load->view('pages/landing', $data);
     }
 
     public function login()
@@ -33,8 +45,7 @@ class User extends CI_Controller
         $user = $this->UserModel->validatepassword($this->input->post('email'));
 
         if ($this->form_validation->run() == false) {
-            $data['title'] = 'Finger Print Attendance Login';
-            $this->load->view('pages/landing', $data);
+            redirect('user/homepage');
         } else {
             if ($user) {
                 if (password_verify($this->input->post('password'), $user['userpassword'])) {
@@ -66,7 +77,7 @@ class User extends CI_Controller
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Access Denied</div>');
-            redirect('user');
+            redirect('user/homepage');
         } else {
             $in = [
                 'username' => $this->input->post('name'),

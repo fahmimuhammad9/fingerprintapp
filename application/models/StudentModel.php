@@ -9,22 +9,17 @@ class StudentModel extends CI_Model
     {
         parent::__construct();
     }
-    public function validate()
+    function getactive()
     {
-        if ($this->session->userdata['email'] == null) {
-            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Access Denied!</div>');
-            redirect('login');
-        } else if ($this->session->userdata['role'] != '2') {
-            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Access Denied!</div>');
-            redirect('logout');
-        }
-    }
-    public function get($table)
-    {
-        return $this->db->get($table)->result_array();
+        $this->db->where('studentstatus', 1);
+        return $this->db->get('student')->result_array();
     }
     function get_student()
     {
         return $this->db->get('student')->result_array();
+    }
+    function get_nastudent($id)
+    {
+        return $this->db->query('SELECT * FROM student a WHERE studentid NOT IN (SELECT studentid FROM classhandshake WHERE classid = ' . $id . ')')->result_array();
     }
 }

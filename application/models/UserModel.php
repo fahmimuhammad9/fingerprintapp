@@ -13,7 +13,7 @@ class UserModel extends CI_Model
     function validate()
     {
         if ($this->session->userdata['email'] == null) {
-            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">No Direct Access Allowed!</div>');
+            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Go Login Access</div>');
             redirect('login');
         }
     }

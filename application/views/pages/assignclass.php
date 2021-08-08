@@ -1,13 +1,7 @@
 <div class="container">
     <div class="page-wrapper">
-        <div class="row">
-            <div class="col">
-                <h2 class="page-header">
-                    Assign Class
-                </h2>
-            </div>
-        </div>
-        <div class="row mt-2">
+
+        <div class="row mt-3">
             <div class="col">
                 <div class="card">
                     <div class="card-header">

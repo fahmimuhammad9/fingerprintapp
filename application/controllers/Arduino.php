@@ -7,25 +7,136 @@ class Arduino extends CI_Controller
     {
         parent::__construct();
         $this->load->library('form_validation');
+        $this->load->model('ArduinoModel');
         date_default_timezone_set('Asia/Bangkok');
-        $this->load->model('SessionModel');
     }
 
     public function index()
     {
+        if (isset($_GET['id'])) {
+            $deviceid = $this->input->get('id');
+        }
+        $this->db->where('iddevice', $deviceid);
+        $data = $this->db->get('devicecommand')->row_array();
+        echo $data['idcommand'] . "/" .   $data['command'] . "/" . $data['command2'];
     }
 
+    public function postabsent()
+    {
+        if (!empty($_GET['idcomm'])) {
+            $commid = $this->input->get('idcomm');
+            $student = $this->input->get('idstudent');
+            $status = $this->input->get('status');
+
+            if ($status == 'OK') {
+                $checksess = $this->ArduinoModel->validate($student);
+                if ($checksess != null) {
+                    $stat = $this->ArduinoModel->getres($checksess['sessionend']);
+                    $inputres = [
+                        'sessionid' => $checksess['sessionid'],
+                        'entityid' => $checksess['entity_id'],
+                        'timestamp' => date("Y/m/d H:i:s"),
+                        'result' => $stat
+                    ];
+                    $this->db->insert('result', $inputres);
+
+                    $checkavail = $this->ArduinoModel->checkses($checksess['sessionid']);
+
+                    if ($checkavail == null) {
+                        $pre  = [
+                            'command' => 'absen',
+                            'command2' => 'pre'
+                        ];
+                        $this->db->where('idcommand', $commid);
+                        $this->db->update('devicecommand', $pre);
+                        echo "Updated";
+                    }
+                    echo "Updated";
+                } else {
+                    echo "No Running Session";
+                }
+            } else {
+                echo "Faild to fetch data";
+            }
+        } else {
+            echo 'No data';
+        }
+    }
+    public function postenroll()
+    {
+        if (isset($_GET['id'])) {
+            $finger = $_GET['id'];
+            $student = $_GET['student'];
+            $device = $_GET['device'];
+            $status = $_GET['status'];
+
+            if ($status == "OK") {
+                $check = $this->ArduinoModel->getfinger($student);
+                if ($check == null) {
+                    $this->ArduinoModel->addfinger($student, $finger, $device);
+                    $this->ArduinoModel->updatecommand($device, $check);
+                    echo 'Data Saved [Code[X]]';
+                } else {
+                    $this->ArduinoModel->updatecommand($device, $check);
+                    echo 'Data Saved [Code[Z]]';
+                }
+            } else {
+                echo 'Failed to Save Data';
+            }
+        }
+    }
     public function getfinger()
     {
-    }
+        if (isset($_GET['device'])) {
+            $device = $_GET['device'];
 
-    public function postfinger($id, $finger)
+            $this->db->where('device_id', $device);
+            $check = $this->db->get('sesshandshake')->row_array();
+
+            if ($check != null) {
+                $up = [
+                    'command' => 'absent',
+                    'command2' => 'na'
+                ];
+                $this->db->where('iddevice', $device);
+                $this->db->update('devicecommand', $up);
+                echo 'Success Update';
+            } else {
+                $up = [
+                    'command' => 'pre',
+                    'command2' => 'pre'
+                ];
+                $this->db->where('iddevice', $device);
+                $this->db->update('devicecommand', $up);
+                echo 'Success Update';
+            }
+        } else {
+            echo 'No Request';
+        }
+    }
+    public function assignfinger($id)
     {
-        $in = [
-            'finger' =>  $finger,
-            'studentid' => $id
-        ];
-        $this->db->insert('finger', $in);
-        redirect();
+        $this->db->where('iddevice', $id);
+        $check = $this->db->get('devicecommand');
+
+        if ($check != null) {
+            $up = [
+                'command' => 'enroll',
+                'command2' => $id
+            ];
+            $this->db->where('iddevice', 6);
+            $this->db->update('devicecommand', $up);
+            $this->session->set_flashdata('message', '<div class="alert alert-success mt-3" role="alert">Please Check Arduino Device!</div>');
+            redirect('student');
+        } else {
+            $up = [
+                'iddevice' => 6,
+                'command' => 'enroll',
+                'command2' => $id
+            ];
+            $this->db->insert('devicecommand', $up);
+            $this->session->set_flashdata('message', '<div class="alert alert-success mt-3" role="alert">Please Check Arduino Device!</div>');
+            redirect('student');
+        }
     }
 }

@@ -13,7 +13,6 @@ class ClassModel extends CI_Model
     function get_class()
     {
         $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
-        $this->db->where('classauthor', $this->session->userdata['id']);
         return $this->db->get('class')->result_array();
     }
     function get_class_info($id)
@@ -27,14 +26,26 @@ class ClassModel extends CI_Model
     }
     function get_active()
     {
+        $this->db->where('classauthor', $this->session->userdata['id']);
         $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
+        $this->db->group_start();
+        $this->db->where('classstatus', 1);
+        $this->db->group_end();
+        return $this->db->get('class')->result_array();
+    }
+    function get_myclass()
+    {
+        $this->db->where('classauthor', $this->session->userdata['id']);
+        $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
+        $this->db->group_start();
         $this->db->where('classstatus', 1);
         $this->db->or_where('classstatus', 3);
-        $this->db->where('classauthor', $this->session->userdata['id']);
+        $this->db->group_end();
         return $this->db->get('class')->result_array();
     }
     function get_reserved()
     {
+        $this->db->where('classauthor', $this->session->userdata['id']);
         $this->db->join('globalstatus', 'globalstatus.statusid = class.classstatus');
         $this->db->where('classstatus', 2);
         return $this->db->get('class')->result_array();
@@ -52,12 +63,6 @@ class ClassModel extends CI_Model
         $this->db->where('classid', $id);
         $this->db->update('class', $arr);
     }
-    function total_student($idclass)
-    {
-        $this->db->select_sum('handshakeid');
-        $this->db->where('classid', $idclass);
-        return $this->db->get('classhandshake');
-    }
     function get_assigned_student($idclass)
     {
         $this->db->join('student', 'student.studentid = classhandshake.studentid', 'left');
@@ -73,5 +78,23 @@ class ClassModel extends CI_Model
     {
         $this->db->where('classid', $id);
         $this->db->delete('classhandshake');
+    }
+    function countstudent($data)
+    {
+        foreach ($data as $key) {
+            $this->db->where('classid', $key['classid']);
+            return $this->db->count_all('classhandshake');
+        }
+    }
+    function checkclass($idclass)
+    {
+        $this->db->where('classid', $idclass);
+        $o = $this->db->get('class')->row_array();
+
+        if ($o['classstatus'] == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
