@@ -8,7 +8,8 @@
         </div>
         <div class="row mb-3">
             <div class="col">
-                <a class="btn btn-info" href="<?= base_url('registersession'); ?>">
+                <a class="btn btn-info btn-block" href="<?= base_url('registersession'); ?>">
+                    <i class="fas fa-calendar-plus"></i>
                     Register Session
                 </a>
             </div>

@@ -8,35 +8,42 @@
         </div>
         <div class="row">
             <div class="col">
-                <form action="<?= base_url('registersession'); ?>" method="post">
-                    <div class="form-group">
-                        <label for="">Session Title</label>
-                        <input class="form-control" type="text" placeholder="" name="name" id="name">
+                <div class="card">
+                    <div class="card-header">
+                        Session Information
                     </div>
-                    <div class="form-group">
-                        <label for="">Set Session Status</label>
-                        <select class="form-control" name="status" id="status">
-                            <option value="" selected hidden>Select Status</option>
-                            <?php foreach ($status as $key) {
-                            ?>
-                                <option value="<?= $key['statusid'] ?>"><?= $key['caption'] ?></option>
-                            <?php
-                            } ?>
-                        </select>
+                    <div class="card-body">
+                        <form action="<?= base_url('addsession'); ?>" method="post">
+                            <div class="form-group">
+                                <label for="">Session Name</label>
+                                <input class="form-control" type="text" name="id" id="id">
+                            </div>
+                            <div class="form-group">
+                                <label for="">Session Status</label>
+                                <select class="form-control" name="status" id="status">
+                                    <option value="" selected hidden>Select Status</option>
+                                    <?php foreach ($status as $key) {
+                                    ?>
+                                        <option value="<?= $key['statusid'] ?>"><?= $key['caption'] ?></option>
+                                    <?php
+                                    } ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Assign Session Class <small class="text-secondary">(Optional)</small> </label>
+                                <select class="form-control" name="text" id="class" name="class">
+                                    <option value="N/A" selected hidden>Select Class</option>
+                                    <?php foreach ($class as $key) {
+                                    ?>
+                                        <option value="<?= $key['classid'] ?>"><?= $key['classname'] ?></option>
+                                    <?php
+                                    } ?>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-info btn-block mt-2">Create Session</button>
+                        </form>
                     </div>
-                    <div class="form-group">
-                        <label for="">Assign Class Attendant</label>
-                        <select class="form-control" name="status" id="status">
-                            <option value="" selected hidden>Select Class Attendant</option>
-                            <?php foreach ($class as $key) {
-                            ?>
-                                <option value="<?= $key['classid'] ?>"><?= $key['classname'] ?></option>
-                            <?php
-                            } ?>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-info btn-block mt-2">Add Class</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>

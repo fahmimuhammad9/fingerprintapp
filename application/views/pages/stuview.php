@@ -25,6 +25,10 @@
                             <div class="modal-body">
                                 <form action="<?= base_url('addstudent'); ?>" method="post">
                                     <div class="form-group">
+                                        <label for="">Student ID</label>
+                                        <input class="form-control" type="text" name="id" id="id">
+                                    </div>
+                                    <div class="form-group">
                                         <label for="">Student Name</label>
                                         <input class="form-control" type="text" name="name" id="name">
                                     </div>
@@ -44,7 +48,6 @@
                             <thead>
                                 <tr>
                                     <th>Full Name</th>
-                                    <th>Total Assigned Class</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -53,7 +56,6 @@
                                 ?>
                                     <tr>
                                         <td><?= $key['studentname'] ?></td>
-                                        <td></td>
                                         <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#assignclass">
                                                 Assign Class
                                             </button>

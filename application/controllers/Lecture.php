@@ -11,7 +11,9 @@ class Lecture extends CI_Controller
         $this->load->model('StudentModel');
         $this->load->model('SessionModel');
         $this->load->model('ClassModel');
+        $this->load->model('ArduinoModel');
         date_default_timezone_set('Asia/Bangkok');
+
         // $this->load->model('LectureModel');
     }
 
@@ -19,8 +21,13 @@ class Lecture extends CI_Controller
     {
         $this->LectureModel->validate();
 
-        $data['title'] = 'Homepage | Lecturer';
-        $data['class'] = $this->ClassModel->get_class();
+        $data['totaldevice'] = $this->db->count_all('device');
+        $data['totalstudent'] = $this->db->count_all('student');
+        $data['totalsession'] = $this->db->count_all('session');
+        $data['totalclass'] = $this->db->count_all('class');
+
+        $data['title'] = 'Homepage Section';
+        $data['class'] = $this->ClassModel->get_myclass();
         $data['session'] = $this->SessionModel->get_session();
 
         $this->load->view('template/header', $data);
@@ -33,9 +40,14 @@ class Lecture extends CI_Controller
     {
         $this->LectureModel->validate();
 
-        $data['title'] = 'Class Assign';
+        $data['totaldevice'] = $this->db->count_all('device');
+        $data['totalstudent'] = $this->db->count_all('student');
+        $data['totalsession'] = $this->db->count_all('session');
+        $data['totalclass'] = $this->db->count_all('class');
+
+        $data['title'] = 'Class Section';
         $data['status'] = $this->ClassModel->get_status();
-        $data['activeclass'] = $this->ClassModel->get_active();
+        $data['activeclass'] = $this->ClassModel->get_myclass();
         $data['reservedclass'] = $this->ClassModel->get_reserved();
 
         $this->load->view('template/header', $data);
@@ -93,9 +105,15 @@ class Lecture extends CI_Controller
     public function deactivateclass($id)
     {
         $this->LectureModel->validate();
-        $this->ClassModel->update_class_status($id, 2);
-        $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Deactivating a Class!</div>');
-        redirect('class');
+        $chec = $this->SessionModel->checkactivesess($id);
+        if ($chec) {
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Failed to Deactivating a Class! Session Running</div>');
+            redirect('class');
+        } else {
+            $this->ClassModel->update_class_status($id, 2);
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Deactivating a Class!</div>');
+            redirect('class');
+        }
     }
     public function reserveclass($id)
     {
@@ -108,9 +126,12 @@ class Lecture extends CI_Controller
     public function student()
     {
         $this->LectureModel->validate();
+        $data['totaldevice'] = $this->db->count_all('device');
+        $data['totalstudent'] = $this->db->count_all('student');
+        $data['totalsession'] = $this->db->count_all('session');
+        $data['totalclass'] = $this->db->count_all('class');
         $data['title'] = 'Student List';
-        $data['student'] = $this->StudentModel->get_student();
-        $data['class'] = $this->ClassModel->get_active();
+        $data['student'] = $this->StudentModel->getactive();
         $data['status'] = $this->ClassModel->get_status();
 
         $this->load->view('template/header', $data);
@@ -132,10 +153,19 @@ class Lecture extends CI_Controller
     {
         $this->LectureModel->validate();
 
-        $data['active'] = $this->SessionModel->checkactive();
-        $data['status'] = $this->ClassModel->get_status();
+        $data['totaldevice'] = $this->db->count_all('device');
+        $data['totalstudent'] = $this->db->count_all('student');
+        $data['totalsession'] = $this->db->count_all('session');
+        $data['totalclass'] = $this->db->count_all('class');
 
-        $data['title'] = 'Session Page | Lecturer';
+        $data['status'] = $this->ClassModel->get_status();
+        $data['session'] = $this->SessionModel->getall();
+        $data['mysess'] = $this->SessionModel->getmysess();
+        $data['device'] = $this->SessionModel->getdevice();
+        $data['showdevice'] = $this->SessionModel->getrunningsess();
+        $data['seerecent'] = $this->SessionModel->seerecent();
+
+        $data['title'] = 'Session Section';
 
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
@@ -146,43 +176,121 @@ class Lecture extends CI_Controller
     public function createsession()
     {
         $this->LectureModel->validate();
-        $this->form_validation->set_rules('title', 'Title', 'required|trim');
-        $this->form_validation->set_rules('status', 'Status', 'required');
+
+        $data['totaldevice'] = $this->db->count_all('device');
+        $data['totalstudent'] = $this->db->count_all('student');
+        $data['totalsession'] = $this->db->count_all('session');
+        $data['totalclass'] = $this->db->count_all('class');
+
+        $data['title'] = 'Register New Session';
+        $data['student'] = $this->db->get('student')->result_array();
+        $data['status'] = $this->ClassModel->get_status();
+        $data['class'] = $this->ClassModel->get_active();
+
+        $this->load->view('template/header', $data);
+        $this->load->view('template/navbar', $data);
+        $this->load->view('pages/createsession', $data);
+        $this->load->view('template/footer');
+    }
+
+    public function sessactiva($idses)
+    {
+        $this->form_validation->set_rules('device', 'Device', 'required');
+        $this->form_validation->set_rules('durasi', 'Durasi', 'required');
 
         if ($this->form_validation->run() == false) {
-            $data['title'] = 'Register New Session';
-            $data['student'] = $this->db->get('student')->result_array();
-            $data['status'] = $this->ClassModel->get_status();
-            $data['class'] = $this->ClassModel->get_active();
+            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">No Direct Access Allowed</div>');
+            redirect('session');
+        } else {
+            $checkclass = $this->ClassModel->checkclass($idses);
+            if (!$checkclass) {
+                $this->session->set_flashdata('message', '<div class="alert alert-warning" role="alert">Your Class is Deactive</div>');
+                redirect('session');
+            }
+            $endtime = $this->SessionModel->countend($this->input->post('durasi'));
 
-            $this->load->view('template/header', $data);
-            $this->load->view('template/navbar', $data);
-            $this->load->view('pages/createsession', $data);
-            $this->load->view('template/footer');
+            if ($this->SessionModel->checkauthor($this->session->userdata['id']) != null) {
+                $this->session->set_flashdata('message', '<div class="alert alert-warning" role="alert">You Have Session Runnning! Failed to Activate Another Session</div>');
+                redirect('session');
+            }
+
+            $device = $this->SessionModel->addentity($idses, $this->input->post('device'));
+            $this->SessionModel->updatesession($idses, $endtime);
+            $this->SessionModel->updatearduino('absent', $device);
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Activate Session</div>');
+            redirect('session');
+        }
+    }
+
+    public function sessionexpired($idsess)
+    {
+        $this->db->where('sessionid', $idsess);
+        $this->db->set('sessionstat', 2);
+        $this->db->update('session');
+
+        $this->db->where('session_id', $idsess);
+        $getdevice = $this->db->get('sesshandshake')->row_array();
+
+        $this->db->where('session_id', $idsess);
+        $this->db->delete('sesshandshake');
+
+        if ($getdevice['device_id'] != null) {
+            $this->db->where('device_id', $getdevice['deviceid']);
+            $pass = $this->db->get('sesshandshake')->result_array();
+
+            if ($pass == null) {
+                $ip = [
+                    'command' => 'pre'
+                ];
+                $this->db->where('iddevice', $getdevice['device_id']);
+                $this->db->update('devicecommand', $ip);
+            }
+        }
+
+        redirect('session');
+    }
+    public function addsession()
+    {
+        $this->LectureModel->validate();
+        $this->form_validation->set_rules('name', 'Name', 'required|trim');
+        $this->form_validation->set_rules('class', 'Class', 'required');
+        $this->form_validation->set_radio('remark', 'Remark', 'trim');
+        if ($this->form_validation->run() == false) {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">No Direct Access Allowed</div>');
+            redirect('registersession');
         } else {
             $in = [
-                'sessiontitle' => $this->input->post('title'),
+                'sessiontitle' => $this->input->post('name'),
                 'sessionauthor' => $this->session->userdata['id'],
-                'sessionstart' => time(),
+                'sessionstart' => null,
                 'sessionend' => null,
-                'sessionstat' => $this->input->post['status']
+                'sessionstat' => 2,
+                'sessclass' => $this->input->post('class'),
+                'sessremark' => $this->input->post('remark')
             ];
             $this->db->insert('session', $in);
-            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Registering Your Session! Go Activate!</div>');
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Add An Inactive Session!</div>');
             redirect('session');
         }
     }
 
     public function studentadd()
     {
-        $this->LectureModel->validate();
-        $this->form_validation->set_rules('name', 'Name', 'required|trim');
+        // $this->LectureModel->validate();
+        $this->form_validation->set_rules('nim', 'Nim', 'required|is_unique[student.nim]', [
+            'required' => 'Kolom ini harus diisi',
+            'is_unique' => 'Nomor Induk Mahasiswa Telah Digunakan'
+        ]);
+        $this->form_validation->set_rules('name', 'Name', 'required|trim', [
+            'required' => 'Kolom ini harus diisi'
+        ]);
 
         if ($this->form_validation->run() == false) {
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Something went wrong!</div>');
             redirect('student');
         } else {
             $in = [
+                'nim' => $this->input->post('nim'),
                 'studentname' => htmlspecialchars($this->input->post('name')),
                 'studentstatus' => 1
             ];
@@ -192,34 +300,26 @@ class Lecture extends CI_Controller
         }
     }
 
-    public function assignstudent($idstudent)
+    public function studentdelete($id)
     {
-        $this->LectureModel->validate();
-
-        $this->form_validation->set_rules('class', 'Class', 'required');
-
-        if ($this->form_validation->run() == false) {
-            redirect('student');
-        } else {
-            $in = [
-                'classid' => $this->input->post('class'),
-                'studentid' => $idstudent
-            ];
-            $this->db->insert('classhandshake', $in);
-            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Success Assign Student!</div>');
-            redirect('student');
-        }
+        $this->db->where('studentid', $id);
+        $this->db->set('studentstatus', 3);
+        $this->db->update('student');
+        redirect('student');
     }
-
     public function assignmclass($idclass)
     {
         $this->LectureModel->validate();
         $data['title'] = 'Assign Class';
 
+        $data['totaldevice'] = $this->db->count_all('device');
+        $data['totalstudent'] = $this->db->count_all('student');
+        $data['totalsession'] = $this->db->count_all('session');
+        $data['totalclass'] = $this->db->count_all('class');
+
         $data['classinfo'] = $this->ClassModel->get_class_info($idclass);
-        $data['totalstudent'] = $this->ClassModel->total_student($idclass);
         $data['assignedstudent'] = $this->ClassModel->get_assigned_student($idclass);
-        $data['nastudent'] = $this->StudentModel->get_student();
+        $data['nastudent'] = $this->StudentModel->get_nastudent($idclass);
 
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
@@ -247,7 +347,7 @@ class Lecture extends CI_Controller
         redirect('lecture/assignmclass/' . $class);
     }
 
-    public function classinfo($id)
+    public function classinfo()
     {
         $this->LectureModel->validate();
         $data['title'] = 'Class Information';
@@ -255,6 +355,39 @@ class Lecture extends CI_Controller
         $this->load->view('template/header', $data);
         $this->load->view('template/navbar', $data);
         $this->load->view('pages/classinfo', $data);
-        $this->load->view('template/footer');
+        $this->load->view('tempbote/footer');
+    }
+
+    public function adddevice()
+    {
+        $this->form_validation->set_rules('namaperangkat', 'Namaperangkat', 'required|trim');
+        $this->form_validation->set_rules('ipaddress', 'Ipaddress', 'required');
+
+        if ($this->form_validation->run() == false) {
+            redirect('session');
+        } else {
+            $in = [
+                'devicename' => htmlspecialchars($this->input->post('namaperangkat')),
+                'deviceip' => htmlspecialchars($this->input->post('ipaddress'))
+            ];
+            $this->db->insert('device', $in);
+            $getdevice = $this->ArduinoModel->get_by_ip($in['deviceip']);
+            $in2 = [
+                'iddevice' => $getdevice['id_device'],
+                'command' => 'pre'
+            ];
+            $this->db->insert('devicecommand', $in2);
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Succes Add Device!</div>');
+            redirect('session');
+        }
+    }
+    public function deletesession($id)
+    {
+        $update = [
+            'sessionstat' => 3
+        ];
+        $this->db->where('sessionid', $id);
+        $this->db->update('session', $update);
+        redirect('session');
     }
 }

@@ -58,9 +58,14 @@ $route['class'] = 'lecture/class';
 $route['addclass'] = 'lecture/newclass';
 $route['student'] = 'lecture/student';
 $route['session'] = 'lecture/session';
+$route['addsession'] = 'lecture/addsession';
+
 $route['registersession'] = 'lecture/createsession';
 $route['lectureassign'] = 'lecture/lectureassign';
 $route['addstudent'] = 'lecture/studentadd';
+
+$route['getfinger'] = 'arduino/getfinger';
+$route['postfinger'] = 'lecture/postfinger';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

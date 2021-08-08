@@ -86,7 +86,6 @@
                                             <a href="<?= base_url('lecture/assignmclass/') . $key['classid'] ?>" class="btn btn-info  <?php if ($key['classstatus'] != 1) {
                                                                                                                                             echo ' disabled';
                                                                                                                                         } ?>"><i class="fas fa-user-plus"></i> Assign</a>
-                                            <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>" class="btn btn-secondary"><i class="fas fa-info"></i> Class Info</a>
                                         </td>
                                     </tr>
                                 <?php
@@ -121,7 +120,6 @@
                                         <td><?= $key['classname'] ?></td>
                                         <td><?= $key['caption'] ?></td>
                                         <td><a class="btn btn-success" href="<?= base_url('lecture/activateclass/') . $key['classid']; ?>"><i class="fas fa-check"></i> Activate</a>
-                                            <a href="<?= base_url('lecture/classinfo/') . $key['classid']; ?>" class="btn btn-secondary"><i class="fas fa-info"></i> Class Info</a>
                                             <button class="btn btn-danger" data-toggle="modal" data-target="#delete"><i class="fas fa-trash"></i> Delete</button>
                                         </td>
                                     </tr>

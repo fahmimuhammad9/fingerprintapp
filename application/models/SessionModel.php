@@ -19,4 +19,10 @@ class SessionModel extends CI_Model
         $this->db->where('sessionstat', 1);
         return $this->db->get('session')->result_array();
     }
+    function checkfingerid($id)
+    {
+        $this->db->join('');
+        $this->db->where('entity_id', $id);
+        $a  = $this->db->get('sesshandshake')->row_array();
+    }
 }
