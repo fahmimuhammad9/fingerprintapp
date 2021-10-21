@@ -67,6 +67,8 @@ $route['addstudent'] = 'lecture/studentadd';
 
 $route['getfinger'] = 'arduino/getfinger';
 $route['postfinger'] = 'lecture/postfinger';
+$route['posttodb'] = 'arduino/posttodb';
+$route['posting'] = 'arduino/posting';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

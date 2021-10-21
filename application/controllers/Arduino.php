@@ -62,26 +62,57 @@ class Arduino extends CI_Controller
             echo 'No data';
         }
     }
-    public function postenroll()
+    public function posttodb()
     {
-        if (isset($_GET['id'])) {
-            $finger = $_GET['id'];
-            $student = $_GET['student'];
-            $device = $_GET['device'];
-            $status = $_GET['status'];
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "dbtestnode";
 
-            if ($status == "OK") {
-                $check = $this->ArduinoModel->getfinger($student);
-                if ($check == null) {
-                    $this->ArduinoModel->addfinger($student, $finger, $device);
-                    $this->ArduinoModel->updatecommand($device, $check);
-                    echo 'Data Saved [Code[X]]';
+        $conn = mysqli_connect("$servername", "$username", "$password", "$dbname");
+
+        $result = mysqli_query($conn, "INSERT INTO datasensor (data) VALUES ('" . $_GET["data"] . "')");
+
+        if (!$result) {
+            die('Invalid query: ' . mysqli_error($conn));
+        }
+    }
+    public function posting()
+    {
+        $command = $_GET['command'];
+        $resp = $_GET['resp'];
+        $device = $_GET['device'];
+        $id = $_GET['id'];
+
+        var_dump($command);
+        var_dump($resp);
+        var_dump($id);
+
+        if ($command == "absent") {
+            if ($resp == "OK") {
+                $checksess = $this->ArduinoModel->validate($id);
+                if ($checksess == null) {
+                    var_dump('No Running Session Registered');
                 } else {
-                    $this->ArduinoModel->updatecommand($device, $check);
-                    echo 'Data Saved [Code[Z]]';
+                    if ($checksess['entity_id'] == $id) {
+                        var_dump('Session Absent ! Time: ' . date('H:i:s'));
+
+                        $stat = $this->ArduinoModel->getres($checksess['sessionend']);
+
+                        $inputres = [
+                            'sessionid' => $checksess['sessionid'],
+                            'entityid' => $checksess['entity_id'],
+                            'timestamp' => date("Y/m/d H:i:s"),
+                            'result' => $stat
+                        ];
+                        $this->db->insert('result', $inputres);
+                        echo 'Successful Absent ! Have a good day';
+                    } else {
+                        var_dump('No Student Registered');
+                    }
                 }
             } else {
-                echo 'Failed to Save Data';
+                var_dump('NOT OK YOU FUCK');
             }
         }
     }
